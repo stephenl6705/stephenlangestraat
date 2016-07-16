@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Comment
+from .models import Post
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from .forms import EmailPostForm, CommentForm
@@ -39,7 +39,7 @@ def post_detail(request, year, month, day, post):
             new_comment = comment_form.save(commit=False)
             new_comment.post = post
             new_comment.save()
-        comment_form=CommentForm()
+        return redirect(post.get_absolute_url())
     else:
         comment_form=CommentForm()
 
@@ -64,6 +64,7 @@ def post_share(request, post_id):
             who = cd['to']
             send_mail(subject, message, cd['name'], [who])
             sent = True
+        return redirect(post.get_absolute_url())
     else:
         form = EmailPostForm()
     return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent, 'who': who})
